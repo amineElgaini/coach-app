@@ -1,0 +1,56 @@
+"coaching-platform/
+│
+├── index.php                          # Point d'entrée principal
+├── config/
+│   └── database.php                   # Configuration de la connexion PDO
+│
+├── models/
+│   ├── Utilisateur.php                # Classe de base (héritage)
+│   ├── Coach.php                      # Classe Coach (hérite de Utilisateur)
+│   ├── Sportif.php                    # Classe Sportif (hérite de Utilisateur)
+│   └── Seance.php                     # Classe Séance
+│
+├── controllers/
+│   ├── CoachController.php            # Gestion des coachs (CRUD)
+│   ├── SeanceController.php           # Gestion des séances (CRUD)
+│   ├── ReservationController.php      # Gestion des réservations
+│   └── AuthController.php             # Gestion authentification (login/logout)
+│
+├── views/
+│   ├── layout/
+│   │   ├── header.php                 # En-tête commun
+│   │   ├── footer.php                 # Pied de page commun
+│   │   └── nav.php                    # Menu de navigation
+│   │
+│   ├── coach/
+│   │   ├── liste.php                  # Liste des coachs
+│   │   ├── detail.php                 # Détail d'un coach
+│   │   ├── inscription.php            # Formulaire d'inscription coach
+│   │   └── modifier.php               # Formulaire de modification profil
+│   │
+│   ├── seance/
+│   │   ├── liste.php                  # Liste des séances disponibles
+│   │   ├── ajouter.php                # Formulaire ajout séance (coach)
+│   │   ├── modifier.php               # Formulaire modification séance
+│   │   └── mes-seances.php            # Séances du coach/sportif
+│   │
+│   ├── auth/
+│   │   └── login.php                  # Formulaire de connexion
+│   │
+│   ├── home.php                       # Page d'accueil
+│   └── 404.php                        # Page d'erreur personnalisée
+│
+├── public/
+│   ├── css/
+│   │   └── style.css                  # Styles CSS
+│   ├── js/
+│   │   └── script.js                  # Scripts JavaScript (optionnel)
+│   └── images/
+│       └── ...                        # Images du site
+│
+├── utils/
+│   ├── Router.php                     # Routeur simple (optionnel)
+│   └── Validation.php                 # Fonctions de validation
+│
+└── database/
+    └── schema.sql                     # Script SQL de création des tables" give me 
