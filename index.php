@@ -54,13 +54,19 @@ try {
                     $coachController->index();
                     break;
 
-                case 'reservation':
+                case 'reserve':
                     $reservationController = new ReservationController();
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $reservationController->reserve($id);
-                    } else {
-                        $reservationController->available($id);
-                    }
+                    $reservationController->reserve($id);
+                    break;
+
+                case 'availability':
+                    $reservationController = new ReservationController();
+                    $reservationController->availability($id);
+                    break;
+
+                case 'reservations':
+                    $reservationController = new ReservationController();
+                    $reservationController->reservations();
                     break;
 
                 default:

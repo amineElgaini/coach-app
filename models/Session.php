@@ -17,14 +17,31 @@ class Session
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAvailable()
+    public function isReserved(int $sessionId): bool
     {
-        $stmt = $this->pdo->query("
+        $stmt = $this->pdo->prepare("
+        SELECT COUNT(*) 
+        FROM reservations 
+        WHERE session_id = :session_id
+    ");
+        $stmt->execute(['session_id' => $sessionId]);
+        $count = $stmt->fetchColumn();
+
+        return $count > 0;
+    }
+
+
+    public function getAvailable($coachId)
+    {
+        $stmt = $this->pdo->prepare("
             SELECT s.*, u.first_name, u.last_name
             FROM sessions s
             JOIN users u ON s.coach_id = u.id
-            WHERE s.status = 'available'
+            WHERE s.status = 'available' AND s.coach_id = :coach_id
+            ORDER BY s.session_date, s.session_time
         ");
+        $stmt->execute(['coach_id' => $coachId]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -39,7 +56,7 @@ class Session
             'coach_id'        => $data['coach_id'],
             'session_date'    => $data['session_date'],
             'session_time'    => $data['session_time'],
-            'duration_minutes'=> $data['duration_minutes']
+            'duration_minutes' => $data['duration_minutes']
         ]);
     }
 

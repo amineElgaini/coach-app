@@ -10,17 +10,32 @@ class Reservation
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    public function create(int $sessionId, int $athleteId): bool
+    public function create(int $sessionId): bool
     {
+        // $stmt = $this->pdo->prepare("SELECT athlete_id FROM sessions WHERE id = :id");
+        // $stmt->execute(['id' => $sessionId]);
+        // $athleteId = $stmt->fetchColumn();
+
         $stmt = $this->pdo->prepare("
             INSERT INTO reservations (session_id, athlete_id)
             VALUES (:session_id, :athlete_id)
         ");
         return $stmt->execute([
             'session_id' => $sessionId,
-            'athlete_id' => $athleteId
+            'athlete_id' => $_SESSION['user']['id'],
         ]);
     }
+
+    public function remove(int $sessionId): bool
+    {
+
+        $stmt = $this->pdo->prepare("
+            DELETE FROM reservations 
+            WHERE session_id = :session_id
+        ");
+        return $stmt->execute(['session_id' => $sessionId]);
+    }
+
 
     public function getByAthlete(int $athleteId)
     {

@@ -24,16 +24,6 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getAllCoaches()
-    {
-        $stmt = $this->pdo->query("
-            SELECT id, first_name, last_name, specialty, experience_years, bio
-            FROM users
-            WHERE role = 'coach'
-        ");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function create(array $data)
     {
         $stmt = $this->pdo->prepare("

@@ -10,6 +10,17 @@ class Coach extends User
         $this->pdo = Database::getInstance()->getConnection();
     }
 
+    public function getAllCoaches()
+    {
+        $stmt = $this->pdo->query("
+            SELECT u.id, u.first_name, u.last_name, c.specialty, c.experience_years, c.bio
+            FROM users u
+            INNER JOIN coaches c ON u.id = c.user_id
+            WHERE u.role = 'coach'
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     public function create(array $data)
     {

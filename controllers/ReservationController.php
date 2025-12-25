@@ -13,18 +13,36 @@ class ReservationController
         $this->reservationModel = new Reservation();
     }
 
-    public function available($coachId = null)
+    public function availability($coachId)
     {
-        $sessions = $this->sessionModel->getAvailable();
-        include 'views/athlete/reservation.php';
+        $sessions = $this->sessionModel->getAvailable($coachId);
+        include 'views/athlete/availability.php';
+    }
+
+    public function reservations()
+    {
+        $athleteId = $_SESSION['user']['id'];
+        $reservations = $this->reservationModel->getByAthlete($athleteId);
+
+        require __DIR__ . '/../views/athlete/reservations.php';
     }
 
     public function reserve($sessionId)
     {
-        $athleteId = $_SESSION['user']['id'];
-        $this->reservationModel->create($sessionId, $athleteId);
-        $this->sessionModel->updateStatus($sessionId, 'booked');
-        header('Location: index.php?page=athlete&action=reservation');
+        $isReserved = $this->sessionModel->isReserved($sessionId);
+
+        if ($isReserved) {
+            $this->reservationModel->remove($sessionId);
+            $this->sessionModel->updateStatus($sessionId, 'available');
+            $_SESSION['success'] = 'Reservation canceled successfully';
+        } else {
+            $this->reservationModel->create($sessionId);
+            $this->sessionModel->updateStatus($sessionId, 'booked');
+            $_SESSION['success'] = 'Session booked successfully';
+        }
+
+        header('Location: index.php?page=athlete&action=coachs');
+
         exit;
     }
 
