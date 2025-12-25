@@ -49,7 +49,7 @@ try {
                     include 'views/athlete/dashboard.php';
                     break;
 
-                case 'coachs':
+                case 'coaches':
                     $coachController = new CoachController();
                     $coachController->index();
                     break;

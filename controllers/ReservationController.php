@@ -40,7 +40,7 @@ class ReservationController
             $this->reservationModel->create($sessionId);
             $this->sessionModel->updateStatus($sessionId, 'booked');
             $_SESSION['success'] = 'Session booked successfully';
-            header('Location: index.php?page=athlete&action=coachs');
+            header('Location: index.php?page=athlete&action=coaches');
         }
 
         exit;

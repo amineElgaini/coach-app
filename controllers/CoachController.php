@@ -15,7 +15,7 @@ class CoachController
     public function index()
     {
         $coaches = $this->coach->getAllCoaches();
-        include 'views/athlete/coachs.php';
+        include 'views/athlete/coaches.php';
     }
 
     public function edit(int $id)
