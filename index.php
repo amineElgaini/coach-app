@@ -76,6 +76,8 @@ try {
 
         case 'coach':
             if (!$isAuthenticated || $role !== 'coach') redirectToLogin();
+            $reservationController = new ReservationController();
+            $coachController = new CoachController();
 
             switch ($action) {
                 case 'dashboard':
@@ -83,11 +85,14 @@ try {
                     break;
 
                 case 'profile':
-                    include 'views/coach/profile.php';
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $coachController->update($_SESSION['user']['id']);
+                    } else {
+                        $coachController->getCoachInfo();
+                    }
                     break;
 
                 case 'reservation':
-                    $reservationController = new ReservationController();
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $reservationController->storeAvailability($_POST);
                     } else {

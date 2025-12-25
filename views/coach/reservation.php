@@ -8,13 +8,11 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
-    <!-- Navbar -->
     <?php include 'views/layout/navbar_coach.php'; ?>
 
     <main class="container mx-auto mt-10">
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Manage Sessions & Reservations</h1>
 
-        <!-- Add Availability Form -->
         <div class="bg-white p-6 rounded shadow-md mb-8 max-w-lg">
             <h2 class="text-xl font-semibold mb-4">Create Availability</h2>
             <form action="index.php?page=coach&action=reservation" method="POST">
@@ -37,7 +35,6 @@
             </form>
         </div>
 
-        <!-- List of Existing Sessions -->
         <div class="bg-white p-6 rounded shadow-md">
             <h2 class="text-xl font-semibold mb-4">Existing Sessions</h2>
             <table class="w-full table-auto border-collapse border border-gray-300">

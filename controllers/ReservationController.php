@@ -21,8 +21,8 @@ class ReservationController
 
     public function reservations()
     {
-        $athleteId = $_SESSION['user']['id'];
-        $reservations = $this->reservationModel->getByAthlete($athleteId);
+        
+        $reservations = $this->reservationModel->getByAthlete();
 
         require __DIR__ . '/../views/athlete/reservations.php';
     }
@@ -35,13 +35,13 @@ class ReservationController
             $this->reservationModel->remove($sessionId);
             $this->sessionModel->updateStatus($sessionId, 'available');
             $_SESSION['success'] = 'Reservation canceled successfully';
+            header('Location: index.php?page=athlete&action=reservations');
         } else {
             $this->reservationModel->create($sessionId);
             $this->sessionModel->updateStatus($sessionId, 'booked');
             $_SESSION['success'] = 'Session booked successfully';
+            header('Location: index.php?page=athlete&action=coachs');
         }
-
-        header('Location: index.php?page=athlete&action=coachs');
 
         exit;
     }

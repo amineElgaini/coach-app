@@ -44,9 +44,9 @@
                                     <span class="px-2 py-1 rounded text-sm bg-green-100 text-green-700">
                                         Booked
                                     </span>
-                                    <a href="index.php?page=athlete&action=reserve&id=<?= $r['id'] ?>"
+                                    <a href="index.php?page=athlete&action=reserve&id=<?= $r['session_id'] ?>"
                                         class="ml-2 px-2 py-1 rounded text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
-                                        Cancel
+                                        <?= $r['session_id'] ?> Cancel
                                     </a>
                                 </td>
                             </tr>

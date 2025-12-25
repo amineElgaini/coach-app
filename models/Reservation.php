@@ -37,8 +37,9 @@ class Reservation
     }
 
 
-    public function getByAthlete(int $athleteId)
+    public function getByAthlete()
     {
+        $athleteId = $_SESSION['user']['id'];
         $stmt = $this->pdo->prepare("
             SELECT r.*, s.session_date, s.session_time, u.first_name AS coach_first, u.last_name AS coach_last
             FROM reservations r

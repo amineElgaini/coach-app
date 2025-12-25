@@ -24,9 +24,18 @@ class CoachController
         include 'views/coach/profile.php';
     }
 
+    public function getCoachInfo()
+    {
+        $coach = $this->coach->getCoachInfo($_SESSION['user']['id']);
+        include 'views/coach/profile.php';
+    }
+
     public function update(int $id)
     {
-        $this->user->update($id, $_POST);
+        $result = $this->coach->update($id, $_POST);
+        if ($result) {
+            $_SESSION['success'] = 'Profile Updated Succesfuly';
+        }
         header('Location: index.php?page=coach&action=profile');
         exit;
     }

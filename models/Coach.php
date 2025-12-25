@@ -21,6 +21,20 @@ class Coach extends User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getCoachInfo(int $coachId)
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT u.id, u.first_name, u.last_name, u.email, c.specialty, c.experience_years, c.bio
+        FROM users u
+        LEFT JOIN coaches c ON u.id = c.user_id
+        WHERE u.id = :id AND u.role = 'coach'
+        LIMIT 1
+    ");
+        $stmt->execute(['id' => $coachId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 
     public function create(array $data)
     {
@@ -49,5 +63,65 @@ class Coach extends User
         }
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $userFields = [];
+        $userParams = ['id' => $id];
+        $coachFields = [];
+        $coachParams = ['user_id' => $id];
+
+        if (isset($data['last_name'])) {
+            $userFields[] = 'last_name = :last_name';
+            $userParams['last_name'] = $data['last_name'];
+        }
+        if (isset($data['first_name'])) {
+            $userFields[] = 'first_name = :first_name';
+            $userParams['first_name'] = $data['first_name'];
+        }
+        if (isset($data['email'])) {
+            $userFields[] = 'email = :email';
+            $userParams['email'] = $data['email'];
+        }
+        if (isset($data['password'])) {
+            $userFields[] = 'password = :password';
+            $userParams['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        if (isset($data['specialty'])) {
+            $coachFields[] = 'specialty = :specialty';
+            $coachParams['specialty'] = $data['specialty'];
+        }
+        if (isset($data['experience_years'])) {
+            $coachFields[] = 'experience_years = :experience_years';
+            $coachParams['experience_years'] = $data['experience_years'];
+        }
+        if (isset($data['bio'])) {
+            $coachFields[] = 'bio = :bio';
+            $coachParams['bio'] = $data['bio'];
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            if (!empty($userFields)) {
+                $sql = "UPDATE users SET " . implode(', ', $userFields) . " WHERE id = :id";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($userParams);
+            }
+
+            if (!empty($coachFields)) {
+                $sql = "UPDATE coaches SET " . implode(', ', $coachFields) . " WHERE user_id = :user_id";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($coachParams);
+            }
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 }
