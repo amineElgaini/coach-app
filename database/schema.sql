@@ -7,10 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('coach', 'athlete') NOT NULL,
+    role ENUM('coach', 'athlete') NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS coaches (
+    user_id INT PRIMARY KEY,
     specialty VARCHAR(100),
     experience_years INT,
-    bio TEXT
+    bio TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -32,20 +37,22 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 
 INSERT INTO users
-(last_name, first_name, email, password, role, specialty, experience_years, bio)
+(last_name, first_name, email, password, role)
 VALUES 
-('Dupont', 'Jean', 'jean.dupont@example.com', '$2y$10$E9Q7O0pH3AqQ7hFZzOQguu1HPOxHqkU1BGtJ7x6n2a4Zr8Hv0eO2K
-', 'coach', 'Fitness', 5, 'Motivating and dynamic coach'),
-('Martin', 'Claire', 'claire.martin@example.com', '$2y$10$E9Q7O0pH3AqQ7hFZzOQguu1HPOxHqkU1BGtJ7x6n2a4Zr8Hv0eO2K
-', 'coach', 'Yoga', 8, 'Hatha Yoga specialist');
+('Dupont', 'Jean', 'jean.dupont@example.com', '$2y$10$OP4YB1AiKHeSf41Kn.SEYez/onOzQwN5hxnG5dazfro7PWuQGs1zi', 'coach'),
+('Martin', 'Claire', 'claire.martin@example.com', '$2y$10$OP4YB1AiKHeSf41Kn.SEYez/onOzQwN5hxnG5dazfro7PWuQGs1zi', 'coach');
+
+INSERT INTO coaches
+(user_id, specialty, experience_years, bio)
+VALUES 
+(1,'Fitness', 5, 'Motivating and dynamic coach'),
+(2, 'Yoga', 8, 'Hatha Yoga specialist');
 
 INSERT INTO users
 (last_name, first_name, email, password, role)
 VALUES 
-('Leblanc', 'Alice', 'alice.leblanc@example.com', '$2y$10$E9Q7O0pH3AqQ7hFZzOQguu1HPOxHqkU1BGtJ7x6n2a4Zr8Hv0eO2K
-', 'athlete'),
-('Durand', 'Paul', 'paul.durand@example.com', '$2y$10$E9Q7O0pH3AqQ7hFZzOQguu1HPOxHqkU1BGtJ7x6n2a4Zr8Hv0eO2K
-', 'athlete');
+('Leblanc', 'Alice', 'alice.leblanc@example.com', '$2y$10$OP4YB1AiKHeSf41Kn.SEYez/onOzQwN5hxnG5dazfro7PWuQGs1zi', 'athlete'),
+('Durand', 'Paul', 'paul.durand@example.com', '$2y$10$OP4YB1AiKHeSf41Kn.SEYez/onOzQwN5hxnG5dazfro7PWuQGs1zi', 'athlete');
 
 INSERT INTO sessions
 (coach_id, session_date, session_time, duration_minutes, status)

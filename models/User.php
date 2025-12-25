@@ -34,25 +34,28 @@ class User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create(array $data): bool
+    public function create(array $data)
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO users
-            (last_name, first_name, email, password, role, specialty, experience_years, bio)
+            (last_name, first_name, email, password, role)
             VALUES
-            (:last_name, :first_name, :email, :password, :role, :specialty, :experience_years, :bio)
+            (:last_name, :first_name, :email, :password, :role)
         ");
 
-        return $stmt->execute([
+        $success = $stmt->execute([
             'last_name'        => $data['last_name'],
             'first_name'       => $data['first_name'],
             'email'            => $data['email'],
             'password'         => password_hash($data['password'], PASSWORD_DEFAULT),
             'role'             => $data['role'],
-            'specialty'        => $data['specialty'] ?? null,
-            'experience_years' => $data['experience_years'] ?? null,
-            'bio'              => $data['bio'] ?? null
         ]);
+
+        if (!$success) {
+            return false;
+        }
+
+        return (int) $this->pdo->lastInsertId();
     }
 
     public function update(int $id, array $data): bool
@@ -60,13 +63,20 @@ class User
         $fields = [];
         $params = ['id' => $id];
 
-        if (isset($data['last_name'])) $fields[] = 'last_name = :last_name'; $params['last_name'] = $data['last_name'];
-        if (isset($data['first_name'])) $fields[] = 'first_name = :first_name'; $params['first_name'] = $data['first_name'];
-        if (isset($data['email'])) $fields[] = 'email = :email'; $params['email'] = $data['email'];
-        if (isset($data['password'])) $fields[] = 'password = :password'; $params['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        if (isset($data['specialty'])) $fields[] = 'specialty = :specialty'; $params['specialty'] = $data['specialty'];
-        if (isset($data['experience_years'])) $fields[] = 'experience_years = :experience_years'; $params['experience_years'] = $data['experience_years'];
-        if (isset($data['bio'])) $fields[] = 'bio = :bio'; $params['bio'] = $data['bio'];
+        if (isset($data['last_name'])) $fields[] = 'last_name = :last_name';
+        $params['last_name'] = $data['last_name'];
+        if (isset($data['first_name'])) $fields[] = 'first_name = :first_name';
+        $params['first_name'] = $data['first_name'];
+        if (isset($data['email'])) $fields[] = 'email = :email';
+        $params['email'] = $data['email'];
+        if (isset($data['password'])) $fields[] = 'password = :password';
+        $params['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        if (isset($data['specialty'])) $fields[] = 'specialty = :specialty';
+        $params['specialty'] = $data['specialty'];
+        if (isset($data['experience_years'])) $fields[] = 'experience_years = :experience_years';
+        $params['experience_years'] = $data['experience_years'];
+        if (isset($data['bio'])) $fields[] = 'bio = :bio';
+        $params['bio'] = $data['bio'];
 
         if (empty($fields)) return false;
 
