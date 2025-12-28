@@ -279,3 +279,59 @@ ORDER BY nb_reservations DESC;
 
 CHLLENGE 8;
 ----------------------------
+-- Partie 1 : coachs et leurs séances
+SELECT 
+    u.nom,
+    u.prenom,
+    u.role,
+    COUNT(s.id) AS nb_activites
+FROM coachs c
+JOIN users u ON c.user_id = u.id
+LEFT JOIN seances s ON c.user_id = s.coach_id
+GROUP BY u.id, u.nom, u.prenom, u.role
+
+UNION ALL
+
+SELECT
+    u.nom,
+    u.prenom,
+    u.role,
+    COUNT(r.id) AS nb_activites
+FROM sportifs sp
+JOIN users u ON sp.user_id = u.id
+LEFT JOIN reservations r ON sp.user_id = r.sportif_id
+GROUP BY u.id, u.nom, u.prenom, u.role;
+
+CHLLENGE 9;
+----------------------------
+SELECT 
+    c.user_id AS coach_id,
+    uc.nom AS coach_nom,
+    uc.prenom AS coach_prenom,
+    s.id AS seance_id,
+    s.date_seance,
+    s.heure,
+    s.duree,
+    s.statut,
+    us.nom AS sportif_nom,
+    us.prenom AS sportif_prenom,
+    r.reserved_at
+FROM coachs c
+JOIN users uc ON c.user_id = uc.id
+JOIN seances s ON c.user_id = s.coach_id
+LEFT JOIN reservations r ON s.id = r.seance_id
+LEFT JOIN users us ON r.sportif_id = us.id
+ORDER BY uc.nom, uc.prenom, s.date_seance, s.heure;
+
+CHLLENGE 10;
+----------------------------
+SELECT 
+    DATE_FORMAT(s.date_seance, '%Y-%m') AS annee_mois,
+    c.discipline,
+    COUNT(s.id) AS total_seances,
+    SUM(CASE WHEN s.statut='reservee' THEN 1 ELSE 0 END) AS nb_reservees,
+    CONCAT(ROUND(SUM(CASE WHEN s.statut='reservee' THEN 1 ELSE 0 END) / COUNT(s.id) * 100, 2), '%') AS taux_reservation
+FROM seances s
+JOIN coachs c ON s.coach_id = c.user_id
+GROUP BY annee_mois, c.discipline
+ORDER BY annee_mois, taux_reservation DESC;
