@@ -208,4 +208,51 @@ INNER JOIN seances s2
     )
 ORDER BY coach_id, date_seance;
 
+CHLLENGE 4;
+----------------------------
+WITH recent_active_coachs AS (
+    SELECT DISTINCT s.coach_id
+    FROM seances s
+    JOIN reservations r ON r.seance_id = s.id
+    WHERE r.reserved_at > NOW() - INTERVAL 60 DAY
+)
 
+SELECT 
+    c.user_id,
+    u.nom,
+    u.prenom
+FROM coachs c
+JOIN users u ON u.id = c.user_id
+WHERE c.user_id NOT IN (SELECT coach_id FROM recent_active_coachs)
+  AND EXISTS (
+      SELECT 1
+      FROM reservations r2
+      JOIN seances s2 ON s2.id = r2.seance_id
+      WHERE s2.coach_id = c.user_id
+  );
+
+CHLLENGE 5;
+----------------------------
+SELECT *
+FROM (
+    SELECT
+        c.discipline,
+        c.user_id AS coach_id,
+        u.nom,
+        u.prenom,
+        COUNT(r.id) AS reservations_count,
+        RANK() OVER (
+            PARTITION BY c.discipline
+            ORDER BY COUNT(r.id) DESC
+        ) AS rn
+    FROM coachs c
+    JOIN users u ON u.id = c.user_id
+    LEFT JOIN seances s ON s.coach_id = c.user_id
+    LEFT JOIN reservations r ON r.seance_id = s.id
+    GROUP BY c.discipline, c.user_id
+) ranked
+WHERE rn <= 3
+ORDER BY discipline, rn;
+
+CHLLENGE 6;
+----------------------------
