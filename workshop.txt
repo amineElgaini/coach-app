@@ -58,7 +58,7 @@ CREATE TABLE reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     seance_id INT UNIQUE,
     sportif_id INT,
-    reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    HOUR, now(), reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (seance_id) REFERENCES seances(id),
     FOREIGN KEY (sportif_id) REFERENCES sportifs(user_id)
 );
@@ -255,4 +255,27 @@ WHERE rn <= 3
 ORDER BY discipline, rn;
 
 CHLLENGE 6;
+----------------------------
+SELECT 
+    s.user_id AS sportif_id,
+    c.user_id AS coach_id,
+    COUNT(*) AS nb_reservations
+FROM sportifs s
+INNER JOIN reservations r ON s.user_id = r.sportif_id
+INNER JOIN seances se ON r.seance_id = se.id
+INNER JOIN coachs c ON se.coach_id = c.user_id
+WHERE TIMESTAMPDIFF(HOUR, r.reserved_at, CONCAT(se.date_seance, ' ', se.heure)) < 24
+GROUP BY s.user_id, c.user_id;
+
+CHLLENGE 7;
+----------------------------
+SELECT 
+    FLOOR(HOUR(s.heure) / 1) AS heure_debut,
+    COUNT(*) AS nb_reservations
+FROM seances s
+WHERE statut = 'reservee'
+GROUP BY heure_debut
+ORDER BY nb_reservations DESC;
+
+CHLLENGE 8;
 ----------------------------
