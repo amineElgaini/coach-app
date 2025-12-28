@@ -132,13 +132,80 @@ INSERT INTO reservations (seance_id, sportif_id, reserved_at) VALUES
 (11, 11, '2025-01-21 23:30');
 
 
---------------------
-select coach_id, count(*) from seances group by coach_id;
+CHLLENGE 1;
+----------------------------
+MULTIPLE QUEARY SOLUTION:
+select coach_id, count(*) as total_created from seances group by coach_id;
 
-select coach_id, count(*) from seances where statut = 'reserve' group by coach_id;
+select coach_id, count(*) as reserved from seances where statut = 'reserve' group by coach_id;
 
-select user_id, (select count(*) from seances where coach_id = user_id and statut = 'reservee') / (select count(*) from seances where coach_id = user_id) * 100 AS reserve_percentage from coachs;
+select user_id, (select count(*) from seances where coach_id = user_id and statut = 'reservee') / (select count(*) from seances where coach_id = user_id) * 10* 100 AS reserve_percentage from coachs;
 
-select coach_id, count(*) from seances group by coach_id having count(*) >= 3;
+select coach_id, count(*) as sessions from seances group by coach_id having count(*) >= 3;
+
+ONE QUEARY SOLUTION:
+SELECT
+    users.nom,
+    users.prenom,
+    COUNT(*) AS total_sessions,
+    COUNT(CASE WHEN seances.statut = 'reservee' THEN 1 END) AS reserved_sessions,
+    ROUND(
+        COUNT(CASE WHEN seances.statut = 'reservee' THEN 1 END) / COUNT(*) * 100,
+        2
+    ) AS reservation_rate
+FROM coachs
+LEFT JOIN seances ON coachs.user_id = seances.coach_id
+INNER JOIN users ON users.id = coachs.user_id
+GROUP BY coachs.user_id, users.nom, users.prenom
+HAVING COUNT(*) >= 3;
+
+CHLLENGE 2;
+----------------------------
+SELECT 
+    users.nom,
+    users.prenom,
+    COUNT(reservations.id) AS reservations_count,
+    DATE_FORMAT(reserved_at, '%Y-%m') AS month_year
+FROM sportifs
+LEFT JOIN reservations 
+    ON sportifs.user_id = reservations.sportif_id
+INNER JOIN users 
+    ON users.id = sportifs.user_id
+GROUP BY 
+    users.id, 
+    DATE_FORMAT(reserved_at, '%Y-%m')
+ORDER BY 
+    reservations_count DESC,
+    month_year DESC;
+
+CHLLENGE 3;
+----------------------------
+SOLUTION 1: // better performence quite at first match and don't return duplicates
+SELECT *
+FROM seances s1
+WHERE EXISTS (
+    SELECT 1
+    FROM seances s2
+    WHERE s1.coach_id = s2.coach_id
+      AND s1.id != s2.id
+      AND s1.date_seance = s2.date_seance
+      AND NOT (
+          ADDTIME(s1.heure, SEC_TO_TIME(s1.duree * 60)) <= s2.heure
+          OR s1.heure >= ADDTIME(s2.heure, SEC_TO_TIME(s2.duree * 60))
+      )
+) order by coach_id, date_seance;
+
+SOLUTION 2: // if session overlap 2 times it will appear two times that why we used distinct
+SELECT DISTINCT s1.*
+FROM seances s1
+INNER JOIN seances s2
+    ON s1.id != s2.id
+    AND s1.coach_id = s2.coach_id
+    AND s1.date_seance = s2.date_seance
+    AND NOT (
+        ADDTIME(s1.heure, SEC_TO_TIME(s1.duree * 60)) <= s2.heure
+        OR s1.heure >= ADDTIME(s2.heure, SEC_TO_TIME(s2.duree * 60))
+    )
+ORDER BY coach_id, date_seance;
 
 
