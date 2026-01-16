@@ -7,17 +7,20 @@ class Database
 
     private string $host = 'localhost';
     private string $dbName = 'coach_app';
-    private string $username = 'root';
-    private string $password = 'root';
+    private string $username = 'postgres'; // default postgres user
+    private string $password = 'root';     // your postgres password
+    private int $port = 5432;              // default PostgreSQL port
 
     private function __construct()
     {
         try {
             $this->pdo = new PDO(
-                "mysql:host={$this->host};dbname={$this->dbName};charset=utf8",
+                "pgsql:host={$this->host};port={$this->port};dbname={$this->dbName}",
                 $this->username,
                 $this->password
             );
+
+            // Set error mode and fetch mode
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
